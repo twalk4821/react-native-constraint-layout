@@ -1,6 +1,6 @@
 {
   "name": "react-native-constraint-layout",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "index.ts",
   "scripts": {
@@ -8,6 +8,9 @@
   },
   "author": "",
   "license": "ISC",
+  "repository": {
+    "url": "https://github.com/twalk4821/react-native-constraint-layout"
+  },
   "peerDependencies": {
     "react": ">= 15.x",
     "react-native": ">= 0.47.x"
