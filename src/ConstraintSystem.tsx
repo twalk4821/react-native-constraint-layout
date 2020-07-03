@@ -1,7 +1,7 @@
-import React, {ReactElement, useState} from 'react';
-import {View, ViewProps, ViewStyle, LayoutRectangle} from 'react-native';
-import ConstraintSystemView from './ConstraintSystemView';
-import {Constraint, Pin} from './types';
+import React, { ReactElement, useState } from "react";
+import { View, ViewProps, ViewStyle, LayoutRectangle } from "react-native";
+import ConstraintSystemView from "./ConstraintSystemView";
+import { Constraint, Pin } from "./types";
 
 interface Props extends ViewProps {
   children: ConstraintSystemView | ConstraintSystemView[];
@@ -25,8 +25,8 @@ const countArray = (array: Array<any>) => {
 };
 
 const ConstraintSystem: (props: Props) => ReactElement = (props) => {
-  const {children = []} = props;
-  const flattenedChildren = children.hasOwnProperty('length')
+  const { children = [] } = props;
+  const flattenedChildren = children.hasOwnProperty("length")
     ? (children as ConstraintSystemView[])
     : [children as ConstraintSystemView];
 
@@ -40,7 +40,7 @@ const ConstraintSystem: (props: Props) => ReactElement = (props) => {
   };
 
   const styles = flattenedChildren.map((child, i) => {
-    const {label, constraints, style} = child.props;
+    const { label, constraints, style } = child.props;
     const measurement = measurements[i];
 
     if (!measurement) {
@@ -52,7 +52,7 @@ const ConstraintSystem: (props: Props) => ReactElement = (props) => {
     let width = measurement.width;
     let height = measurement.height;
 
-    const gatheredConstraints: {[key: string]: Constraint[]} = {};
+    const gatheredConstraints: { [key: string]: Constraint[] } = {};
     constraints.forEach((constraint) => {
       if (gatheredConstraints[constraint.target]) {
         gatheredConstraints[constraint.target].push(constraint);
@@ -62,80 +62,94 @@ const ConstraintSystem: (props: Props) => ReactElement = (props) => {
     });
 
     Object.keys(gatheredConstraints).forEach((target) => {
+      let hasEvaluatedHorizontalConstraint = false;
+      let hasEvaluatedVerticalConstraint = false;
       gatheredConstraints[target]!.forEach((constraint) => {
         let targetMeasurement;
-        if (target === 'parent') {
+        if (target === "parent") {
           targetMeasurement = measurements[flattenedChildren.length];
         } else {
           const index = flattenedChildren.findIndex(
-            (child) => child.props.label === target,
+            (child) => child.props.label === target
           );
           targetMeasurement = measurements[index];
         }
         targetMeasurement as Measurement;
 
-        if (constraint.pin === Pin.top) {
-          const bottomConstraint = constraints.find(
-            (constraint) => constraint.pin === Pin.bottom,
-          );
-          if (bottomConstraint) {
-            y =
-              targetMeasurement.y +
-              (targetMeasurement.height - measurement.height) / 2;
-          } else {
-            y = targetMeasurement.y + constraint.value;
+        if (!hasEvaluatedVerticalConstraint) {
+          if (constraint.pin === Pin.top) {
+            const bottomConstraint = constraints.find(
+              (constraint) => constraint.pin === Pin.bottom
+            );
+            if (bottomConstraint) {
+              y =
+                targetMeasurement.y +
+                (targetMeasurement.height - measurement.height) / 2;
+            } else {
+              y = targetMeasurement.y + (constraint.value ?? 0);
+            }
+            measurement.y = y;
+            hasEvaluatedVerticalConstraint = true;
           }
-          measurement.y = y;
+
+          if (constraint.pin === Pin.bottom) {
+            const topConstraint = constraints.find(
+              (constraint) => constraint.pin === Pin.top
+            );
+            if (topConstraint) {
+              y =
+                targetMeasurement.y +
+                (targetMeasurement.height - measurement.height) / 2;
+            } else {
+              y =
+                targetMeasurement.y +
+                targetMeasurement.height +
+                (constraint.value ?? 0);
+            }
+            measurement.y = y;
+            hasEvaluatedVerticalConstraint = true;
+          }
         }
 
-        if (constraint.pin === Pin.right) {
-          const leftConstraint = constraints.find(
-            (constraint) => constraint.pin === Pin.left,
-          );
-          if (leftConstraint) {
-            x =
-              targetMeasurement.x +
-              (targetMeasurement.width - measurement.width) / 2;
-          } else {
-            x =
-              targetMeasurement.x + targetMeasurement.width + constraint.value;
+        if (!hasEvaluatedHorizontalConstraint) {
+          if (constraint.pin === Pin.right) {
+            const leftConstraint = constraints.find(
+              (constraint) => constraint.pin === Pin.left
+            );
+            if (leftConstraint) {
+              x =
+                targetMeasurement.x +
+                (targetMeasurement.width - measurement.width) / 2;
+            } else {
+              x =
+                targetMeasurement.x +
+                targetMeasurement.width +
+                (constraint.value ?? 0);
+            }
+            measurement.x = x;
+            hasEvaluatedHorizontalConstraint = true;
           }
-          measurement.x = x;
-        }
 
-        if (constraint.pin === Pin.bottom) {
-          const topConstraint = constraints.find(
-            (constraint) => constraint.pin === Pin.top,
-          );
-          if (topConstraint) {
-            y =
-              targetMeasurement.y +
-              (targetMeasurement.height - measurement.height) / 2;
-          } else {
-            y =
-              targetMeasurement.y + targetMeasurement.height + constraint.value;
+          if (constraint.pin === Pin.left) {
+            const rightConstraint = constraints.find(
+              (constraint) => constraint.pin === Pin.right
+            );
+            if (rightConstraint) {
+              x =
+                targetMeasurement.x +
+                (targetMeasurement.width - measurement.width) / 2;
+            } else {
+              x = targetMeasurement.x + (constraint.value ?? 0);
+            }
+            measurement.x = x;
+            hasEvaluatedHorizontalConstraint = true;
           }
-          measurement.y = y;
-        }
-
-        if (constraint.pin === Pin.left) {
-          const rightConstraint = constraints.find(
-            (constraint) => constraint.pin === Pin.right,
-          );
-          if (rightConstraint) {
-            x =
-              targetMeasurement.x +
-              (targetMeasurement.width - measurement.width) / 2;
-          } else {
-            x = targetMeasurement.x + constraint.value;
-          }
-          measurement.x = x;
         }
       });
     });
 
     return {
-      position: 'absolute',
+      position: "absolute",
       left: x,
       top: y,
       width,
@@ -148,16 +162,19 @@ const ConstraintSystem: (props: Props) => ReactElement = (props) => {
       {countArray(measurements) !== flattenedChildren.length + 1 && (
         <View
           {...props}
+          style={[props.style, { opacity: 0 }]}
           onLayout={(e) => {
             saveMeasurement(e.nativeEvent.layout, flattenedChildren.length);
-          }}>
+          }}
+        >
           {countArray(measurements) !== flattenedChildren.length &&
             flattenedChildren.map((child, i) => (
               <View
-                style={child.props.style}
+                style={[child.props.style, { opacity: 0 }]}
                 onLayout={(e) => {
                   saveMeasurement(e.nativeEvent.layout, i);
-                }}>
+                }}
+              >
                 {child}
               </View>
             ))}
