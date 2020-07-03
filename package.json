@@ -1,0 +1,30 @@
+{
+  "name": "react-native-constraint-layout",
+  "version": "1.0.2",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "peerDependencies": {
+    "react": ">= 15.x",
+    "react-native": ">= 0.47.x"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.10.3",
+    "@babel/runtime": "^7.10.3",
+    "@react-native-community/eslint-config": "^2.0.0",
+    "@types/jest": "^26.0.0",
+    "@types/react": "^16.9.38",
+    "@types/react-native": "^0.62.13",
+    "@types/react-test-renderer": "^16.9.2",
+    "babel-jest": "^26.0.1",
+    "eslint": "^7.3.0",
+    "jest": "^26.0.1",
+    "metro-react-native-babel-preset": "^0.59.0",
+    "react-test-renderer": "16.11.0",
+    "typescript": "^3.9.5"
+  }
+}
