@@ -170,6 +170,7 @@ const ConstraintSystem: (props: Props) => ReactElement = (props) => {
           {countArray(measurements) !== flattenedChildren.length &&
             flattenedChildren.map((child, i) => (
               <View
+                key={Math.random()}
                 style={[child.props.style, { opacity: 0 }]}
                 onLayout={(e) => {
                   saveMeasurement(e.nativeEvent.layout, i);
@@ -183,7 +184,11 @@ const ConstraintSystem: (props: Props) => ReactElement = (props) => {
       {countArray(measurements) === flattenedChildren.length + 1 && (
         <View {...props}>
           {flattenedChildren.map((child, i) => (
-            <View style={[child.props.style, styles[i] as ViewStyle]}>
+            <View
+              {...child.props}
+              key={Math.random()}
+              style={[child.props.style, styles[i] as ViewStyle]}
+            >
               {child.props.children}
             </View>
           ))}
